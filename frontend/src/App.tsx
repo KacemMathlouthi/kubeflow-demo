@@ -1,5 +1,6 @@
 import './index.css';
 import ImplementedFeatures from './components/implemented-features';
+import UpcomingFeatures from './components/upcoming-features';
 
 function App() {
   return (    
@@ -13,6 +14,9 @@ function App() {
             </p>
           </div>
           <div className="mt-10">
+            <UpcomingFeatures />
+          </div>
+          <div className="mt-10"> 
             <ImplementedFeatures />
           </div>
         </div>
