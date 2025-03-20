@@ -83,7 +83,7 @@ export default function ChatInterface() {
             <Button
               variant="outline"
               className="hidden md:flex items-center space-x-2"
-              onClick={() => window.open("https://github.com/kubeflow/kubeflow", "_blank")}
+              onClick={() => window.open("https://github.com/KacemMathlouthi/kubeflow-demo", "_blank")}
             >
               <Github className="h-4 w-4" />
               <span>GitHub</span>
