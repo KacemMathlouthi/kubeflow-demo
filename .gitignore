@@ -26,3 +26,34 @@ frontend/.env
 /frontend/*.sln
 /frontend/.venv
 
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.db
+*.sqlite3
+
+# Poetry
+.poetry/
+*.toml.lock
+
+# Virtualenvs
+.env/
+.venv/
+env/
+venv/
+
+# PostgreSQL
+*.sql
+*.sqlite3
+
+
+# IDEs and Editors
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
