@@ -1,0 +1,567 @@
+Directory structure:
+└── kacemmathlouthi-resume-rag/
+    ├── README.md
+    ├── LICENSE
+    ├── app.py
+    ├── requirements.txt
+    ├── utils.py
+    └── data/
+        └── resume.txt
+
+================================================
+File: README.md
+================================================
+# **RAG Resume Chatbot with Gradio**
+A chatbot application that leverages **retrieval-augmented generation (RAG)** to answer questions about an individual's professional experience. The chatbot is designed to retrieve relevant information from a resume and generate intelligent responses using large language models (LLMs).
+
+---
+
+## **Features**
+- **Resume-based Question Answering:** Ask questions about Kacem Mathlouthi's professional background.
+- **Semantic Search:** Uses embeddings to retrieve the most relevant sections of the resume.
+- **Gradio Interface:** A user-friendly interface for interacting with the chatbot.
+
+---
+
+## **Technologies Used**
+- **Python**: Core programming language for the project.
+- **Gradio**: For building the chatbot interface.
+- **LangChain**: To handle embeddings and retrieval-augmented search.
+- **Chroma**: For vector-based semantic search.
+- **Groq**: For generating responses using pre-trained language models.
+- **sentence-transformers**: For embedding generation.
+
+---
+
+## **Project Structure**
+
+```
+.
+├── LICENSE              # License for the project
+├── README.md            # Project documentation
+├── requirements.txt     # Python dependencies
+├── app.py               # Main application script
+├── utils.py             # Utility functions for embeddings, search, etc.
+├── data
+│   └── resume.txt           # Resume data for answering questions
+└── .env                 # Environment variables (You should create this file)
+```
+
+---
+
+## **Setup Instructions**
+
+### **1. Clone the Repository**
+```bash
+git clone https://github.com/KacemMathlouthi/Resume-RAG.git
+cd Resume-RAG
+```
+
+### **2. Create a Virtual Environment**
+It is recommended to use a virtual environment to manage dependencies.
+```bash
+python3 -m venv venv
+source venv/bin/activate  # For Linux/MacOS
+venv\Scripts\activate     # For Windows
+```
+
+### **3. Install Dependencies**
+Install all required libraries from `requirements.txt`:
+```bash
+pip install -r requirements.txt
+```
+
+### **4. Add the Environment Variables**
+Create a `.env` file in the root directory and add the following:
+```
+GROQ_API_KEY=your_groq_api_key_here
+```
+
+### **5. Run the Application**
+Launch the Gradio interface:
+```bash
+python app.py
+```
+The application will run locally, and you can access it in your browser at [http://127.0.0.1:7860](http://127.0.0.1:7860).
+
+---
+
+## **Usage**
+**Ask Questions:** Use the chatbot interface to ask specific questions about the resume. For example:
+   - *"What are Kacem Mathlouthi's main skills?"*
+   - *"Tell me about his previous work experience."*
+
+---
+
+## **License**
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+
+
+================================================
+File: LICENSE
+================================================
+MIT License
+
+Copyright (c) 2025 Kacem Mathlouthi
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+
+
+================================================
+File: app.py
+================================================
+import os
+
+import gradio as gr
+from dotenv import load_dotenv
+from groq import Groq
+from langchain.vectorstores import Chroma
+
+from utils import (
+    load_text_data,
+    resume_chat_completion,
+    semantic_search,
+    setup_embedding_model,
+)
+
+# Load the embeddings model
+embedding_model = setup_embedding_model(
+    model_name="sentence-transformers/all-mpnet-base-v2"
+)
+
+# Load the text data
+my_resume = load_text_data("data/resume.txt")
+
+# Chunking the text data
+chunks = [chunk.strip() for chunk in my_resume.split("---") if chunk.strip()]
+chunk_sizes = [len(chunk) for chunk in chunks]
+
+# Create a Chroma database
+db = Chroma.from_texts(chunks, embedding_model)
+retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+
+# Setting up the llm
+load_dotenv()
+client = Groq(
+    api_key=os.getenv("GROQ_API_KEY"),
+)
+
+with gr.Blocks() as demo:
+    gr.Markdown("# Kacem Mathlouthi Resume RAG Chatbot")
+    gr.Markdown("""
+    ## About this Chatbot
+    
+    This is a Retrieval-Augmented Generation (RAG) chatbot powered by AI that allows you to interactively explore Kacem Mathlouthi's resume. 
+    
+    - **Technology**: Utilizes advanced semantic search and language model techniques
+    - **Purpose**: Provide detailed, context-aware answers about Kacem's professional background
+    - **How it works**: 
+      1. Your question is semantically searched against resume chunks
+      2. Relevant excerpts are retrieved
+      3. A language model generates a precise, contextual response
+    """)
+
+    chatbot = gr.Chatbot(type="messages", height=400)
+    with gr.Row(equal_height=True):
+        with gr.Column(scale=10):
+            msg = gr.Textbox(label="Ask a question about the resume", container=False)
+        with gr.Column(scale=1):
+            submit = gr.Button(value="➤", size="sm")
+    
+    clear = gr.ClearButton([msg, chatbot], size="sm")
+
+    # Function for chatbot interaction
+    def respond(message, chat_history):
+        """
+        Gradio function for chatbot interaction.
+        Args:
+            message (str): The user's question.
+            chat_history (list): The chat history.
+        Returns:
+            tuple: Updated chat history and cleared textbox
+        """
+        # Perform semantic search
+        relevant_excerpts = semantic_search(message, retriever)
+        # Get the LLM response
+        bot_message = resume_chat_completion(
+            client, "llama-3.3-70b-versatile", message, relevant_excerpts
+        )
+
+        # Append to history and return both history and empty string for textbox
+        chat_history.append({"role": "user", "content": message})
+        chat_history.append({"role": "assistant", "content": bot_message})
+        return "", chat_history
+
+    # Bind submit button and textbox to the respond function
+    submit.click(respond, [msg, chatbot], [msg, chatbot])
+    msg.submit(respond, [msg, chatbot], [msg, chatbot])
+
+# Run the app
+if __name__ == "__main__":
+    demo.launch()
+
+
+================================================
+File: requirements.txt
+================================================
+aiofiles==23.2.1
+aiohappyeyeballs==2.4.4
+aiohttp==3.11.11
+aiosignal==1.3.2
+annotated-types==0.7.0
+anyio==4.8.0
+asgiref==3.8.1
+astroid==3.3.8
+attrs==24.3.0
+backoff==2.2.1
+bcrypt==4.2.1
+black==24.10.0
+build==1.2.2.post1
+cachetools==5.5.1
+certifi==2024.12.14
+charset-normalizer==3.4.1
+chroma-hnswlib==0.7.6
+chromadb==0.6.3
+click==8.1.8
+coloredlogs==15.0.1
+dataclasses-json==0.6.7
+Deprecated==1.2.15
+dill==0.3.9
+distro==1.9.0
+durationpy==0.9
+fastapi==0.115.7
+ffmpy==0.5.0
+filelock==3.17.0
+flatbuffers==25.1.21
+frozenlist==1.5.0
+fsspec==2024.12.0
+google-auth==2.38.0
+googleapis-common-protos==1.66.0
+gradio==5.13.0
+gradio_client==1.6.0
+greenlet==3.1.1
+groq==0.15.0
+grpcio==1.69.0
+h11==0.14.0
+httpcore==1.0.7
+httptools==0.6.4
+httpx==0.28.1
+httpx-sse==0.4.0
+huggingface-hub==0.27.1
+humanfriendly==10.0
+idna==3.10
+importlib_metadata==8.5.0
+importlib_resources==6.5.2
+isort==5.13.2
+Jinja2==3.1.5
+jiter==0.8.2
+joblib==1.4.2
+jsonpatch==1.33
+jsonpointer==3.0.0
+kubernetes==31.0.0
+langchain==0.3.15
+langchain-community==0.3.15
+langchain-core==0.3.31
+langchain-text-splitters==0.3.5
+langsmith==0.3.1
+markdown-it-py==3.0.0
+MarkupSafe==2.1.5
+marshmallow==3.26.0
+mccabe==0.7.0
+mdurl==0.1.2
+mmh3==5.0.1
+monotonic==1.6
+mpmath==1.3.0
+multidict==6.1.0
+mypy-extensions==1.0.0
+networkx==3.4.2
+numpy==2.2.2
+nvidia-cublas-cu12==12.4.5.8
+nvidia-cuda-cupti-cu12==12.4.127
+nvidia-cuda-nvrtc-cu12==12.4.127
+nvidia-cuda-runtime-cu12==12.4.127
+nvidia-cudnn-cu12==9.1.0.70
+nvidia-cufft-cu12==11.2.1.3
+nvidia-curand-cu12==10.3.5.147
+nvidia-cusolver-cu12==11.6.1.9
+nvidia-cusparse-cu12==12.3.1.170
+nvidia-nccl-cu12==2.21.5
+nvidia-nvjitlink-cu12==12.4.127
+nvidia-nvtx-cu12==12.4.127
+oauthlib==3.2.2
+onnxruntime==1.20.1
+openai==1.60.0
+opentelemetry-api==1.29.0
+opentelemetry-exporter-otlp-proto-common==1.29.0
+opentelemetry-exporter-otlp-proto-grpc==1.29.0
+opentelemetry-instrumentation==0.50b0
+opentelemetry-instrumentation-asgi==0.50b0
+opentelemetry-instrumentation-fastapi==0.50b0
+opentelemetry-proto==1.29.0
+opentelemetry-sdk==1.29.0
+opentelemetry-semantic-conventions==0.50b0
+opentelemetry-util-http==0.50b0
+orjson==3.10.15
+overrides==7.7.0
+packaging==24.2
+pandas==2.2.3
+pathspec==0.12.1
+pillow==11.1.0
+platformdirs==4.3.6
+posthog==3.9.2
+propcache==0.2.1
+protobuf==5.29.3
+pyasn1==0.6.1
+pyasn1_modules==0.4.1
+pydantic==2.10.5
+pydantic-settings==2.7.1
+pydantic_core==2.27.2
+pydub==0.25.1
+Pygments==2.19.1
+pylint==3.3.3
+PyPika==0.48.9
+pyproject_hooks==1.2.0
+python-dateutil==2.9.0.post0
+python-dotenv==1.0.1
+python-multipart==0.0.20
+pytz==2024.2
+PyYAML==6.0.2
+regex==2024.11.6
+requests==2.32.3
+requests-oauthlib==2.0.0
+requests-toolbelt==1.0.0
+rich==13.9.4
+rsa==4.9
+ruff==0.9.2
+safehttpx==0.1.6
+safetensors==0.5.2
+scikit-learn==1.6.1
+scipy==1.15.1
+semantic-version==2.10.0
+sentence-transformers==3.3.1
+setuptools==75.8.0
+shellingham==1.5.4
+six==1.17.0
+sniffio==1.3.1
+SQLAlchemy==2.0.37
+starlette==0.45.2
+sympy==1.13.1
+tenacity==9.0.0
+threadpoolctl==3.5.0
+tokenizers==0.21.0
+tomlkit==0.13.2
+torch==2.5.1
+tqdm==4.67.1
+transformers==4.48.1
+triton==3.1.0
+typer==0.15.1
+typing-inspect==0.9.0
+typing_extensions==4.12.2
+tzdata==2025.1
+urllib3==2.3.0
+uvicorn==0.34.0
+uvloop==0.21.0
+watchfiles==1.0.4
+websocket-client==1.8.0
+websockets==14.2
+wrapt==1.17.2
+yarl==1.18.3
+zipp==3.21.0
+zstandard==0.23.0
+
+
+
+================================================
+File: utils.py
+================================================
+from langchain.embeddings import HuggingFaceEmbeddings
+
+
+def setup_embedding_model(model_name: str):
+    """
+    Setup embedding model for RAG chatbot.
+    Returns:
+        Embedding_model: HuggingFaceEmbeddings object.
+    """
+    # Load embedding model
+    embedding_model = HuggingFaceEmbeddings(model_name=model_name)
+    return embedding_model
+
+
+def load_text_data(file_path: str):
+    """
+    Load text data from a file.
+    Args:
+        file_path (str): Path to the file.
+    Returns:
+        data (list): List of strings representing the text data.
+    """
+    try:
+        with open(file_path, "r") as file:
+            data = file.read()
+        return data
+    except FileNotFoundError:
+        raise FileNotFoundError(f"The file at {file_path} was not found.")
+    except Exception as e:
+        raise RuntimeError(f"An error occurred while reading the file: {e}")
+
+
+def semantic_search(prompt, retriever):
+    """
+    Perform semantic search using the retriever.
+
+    :param prompt: str, The user query or prompt.
+    :param retriever: retriever object, Initialized retriever for the database.
+    :return: List of relevant documents.
+    """
+    # Query the retriever with the user prompt
+    results = retriever.get_relevant_documents(prompt)
+    final = ""
+    # Display the results
+    for idx, doc in enumerate(results, 1):
+        final += doc.page_content + "\n\n"
+
+    return final
+
+
+def resume_chat_completion(client, model, user_question, relevant_excerpts):
+    """
+    Generate a response to the user's question using the pre-trained model.
+    Args:
+        client (Groq): Initialized Groq client.
+        model (str): The model to use for the chat completion.
+        user_question (str): The user's question.
+        relevant_excerpts (str): The relevant excerpts from the resume.
+    Returns:
+        response (str): The generated response to the user's question.
+    """
+
+    # Define the system prompt
+    system_prompt = """
+    You are an intelligent assistant designed to answer queries about Kacem Mathlouthi's professional background and experiences based on his resume. 
+
+    Guidelines for generating responses:
+    - Only use information directly found in the provided resume excerpts.
+    - If the information is incomplete or ambiguous in the excerpts, inform the user that you lack sufficient data to answer.
+    - If a user asks a general or unrelated question (e.g., about something that isn't part of the resume), you should politely indicate that you can only respond related to Kacem's resume.
+
+    Please ensure that your answers are factual and reflect only the information available in the resume. Do not provide opinions or speculate beyond what is provided in the document.
+    """
+
+    # Generate a response to the user's question using the pre-trained model
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {
+                "role": "user",
+                "content": "User Question: "
+                + user_question
+                + "\n Relevant Kacem's Resume/CV Exerpt(s): \n"
+                + relevant_excerpts,
+            },
+        ],
+        model=model,
+    )
+
+    # Extract the response from the chat completion
+    response = chat_completion.choices[0].message.content
+
+    return response
+
+
+
+================================================
+File: data/resume.txt
+================================================
+### **Contact Information**
+- **Name**: Kacem Mathlouthi
+- **Email**: kacem.mathlouthi@ieee.org
+- **Phone Number**: +216 52 387 938
+- **LinkedIn**: [Kacem Mathlouthi](https://www.linkedin.com/in/kacem-mathlouthi)
+- **GitHub**: [Kacem Mathlouthi](https://github.com/KacemMathlouthi)
+- **Address**: Tunis, Tunisia
+
+---
+
+### **Professional Summary**
+- **Overview**: Kacem Mathlouthi is a Software Engineering student at the National Institute of Applied Science and Technology (INSAT), specializing in Artificial Intelligence and Machine Learning.
+- **Expertise**:
+  - Developing AI agents, Convolutional Neural Networks (CNNs), and Retrieval-Augmented Generation (RAG) chatbot systems.
+  - Delivering innovative solutions across industries: cybersecurity, insurance, agriculture, and developer tools.
+- **Passion**: Committed to creating meaningful AI-driven software solutions with practical impact.
+
+---
+
+### **Education**
+- **Institution**: National Institute of Applied Science and Technology (INSAT)
+- **Degree**: Bachelor of Science in Software Engineering
+- **Expected Graduation**: May 2027
+- **Key Coursework**:
+  - **Programming**: Data Structures and Algorithms, Object-Oriented Programming, UML, System Design.
+  - **Databases**: Relational Databases, NoSQL.
+  - **Mathematics**: Probability, Statistics, Linear Algebra, Optimization Algorithms.
+  - **Data Analysis**: Data visualization and analysis techniques.
+
+---
+
+### **Professional Experience**
+#### **Machine Learning Engineer Intern**
+- **Organization**: Orange, Tunis, Tunisia
+- **Duration**: August 2024 – October 2024
+- **Key Contributions**:
+  - Developed a lightweight Convolutional Neural Network (CNN) optimized for edge devices using knowledge distillation.
+  - Automated report generation through an AI-driven agentic workflow, improving efficiency in data collection, analysis, and research.
+  - Designed a chatbot system to provide real-time farming guidance and insights.
+
+---
+
+### **Achievements and Recognitions**
+- **1st Place**: Orange x Hexabot Conversational AI Hackathon
+  - Developed plugins/extensions for Hexabot, enabling multimodal capabilities like text-to-speech, speech-to-text, and vision integration.
+- **2nd Place**: IEEE TSYP 12 CS Technical Challenge
+  - Created Smartshield: An AI-powered cybersecurity threat detection and response platform.
+- **2nd Place**: Artificial Intelligence National Summit (AINS 2.0)
+  - Built a Multi-LLM Agent System to assist machine learning professionals with problem-solving and data analysis.
+- **4th Place**: Orange Summer Challenge 2024
+  - Innovated AI applications for agriculture.
+- **3rd Place**: Code Quest ACM INSAT Programming Event
+  - Honed problem-solving and teamwork skills through competitive programming.
+
+---
+
+### **Projects**
+#### **MachineLearning.Guide**
+- **Description**: Multi-LLM Agent System to assist professionals in machine learning problem-solving.
+- **Tools Used**: CrewAI, Streamlit, GroqAI, JinaAI, Sweetviz, Arxiv.
+- **Outcome**: Efficient definition, evaluation, and solution of machine learning challenges.
+
+#### **Machine Learning Algorithms From Scratch**
+- **Description**: Implemented foundational ML algorithms (PCA, Random Forest, Decision Trees, KNN, K-means).
+- **Technologies**: Python, NumPy, Matplotlib, Scikit-learn.
+- **Outcome**: Demonstrated deep understanding of core ML concepts.
+
+---
+
+### **Technical Skills**
+- **Programming Languages**: Python, C/C++, Java, SQL, JavaScript.
+- **Tools and Frameworks**: Git, Linux, NumPy, Pandas, PyTorch, Langchain, CrewAI, FastAPI, MongoDB, Streamlit, Docker.
+- **Expertise**: Building scalable, efficient AI and software engineering solutions.
+

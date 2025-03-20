@@ -14,6 +14,7 @@ async def fetch_download_link(repository_name: str):
 
     Returns:
         str: The download link for the content of the given repository.
+        requests.Session: A session object to maintain cookies and headers.
 
     PS: I saw how Gitingest send the request through Network tab in Chrome DevTools 
         and I mimic it but it won't be like this in a prod version, this is a temporary solution.
@@ -26,8 +27,11 @@ async def fetch_download_link(repository_name: str):
         "pattern": ""
     }
 
-    # Send the request
-    response = requests.post(BASE_URL, data=payload)
+    # Create a session to maintain cookies and headers
+    session = requests.Session()
+
+    # Send the request using the session
+    response = session.post(BASE_URL, data=payload)
 
     # Ensure request was successful
     if response.status_code != 200:
@@ -48,7 +52,7 @@ async def fetch_download_link(repository_name: str):
     download_link = BASE_URL + download_link_tag["href"]
     
     print(f"Download link found: {download_link}")
-    return download_link
+    return download_link, session
 
 async def download_and_save_repository(repository_name: str):
     """
@@ -58,7 +62,11 @@ async def download_and_save_repository(repository_name: str):
         repository_name (str): The name of the repository (e.g., "kubeflow-website").
     """
     # Get the download link
-    download_url = await fetch_download_link(repository_name)
+    download_url, session = await fetch_download_link(repository_name)
+
+    if not download_url or not session:
+        print("Failed to obtain download URL or session. Cannot proceed with download.")
+        return False
 
     # Define the output directory and file path
     save_dir = os.path.join(os.getcwd(), "parsed_repositories", repository_name)
@@ -66,7 +74,7 @@ async def download_and_save_repository(repository_name: str):
     save_path = os.path.join(save_dir, "code.txt")
 
     # Send a request to download the file
-    response = requests.get(download_url, stream=True)
+    response = session.get(download_url, stream=True)
 
     if response.status_code == 200:
         with open(save_path, "wb") as file:
@@ -74,5 +82,7 @@ async def download_and_save_repository(repository_name: str):
                 file.write(chunk)
         
         print(f"Repository successfully downloaded and saved to: {save_path}")
+        return True
     else:
         print(f"Failed to download the repository. HTTP Status: {response.status_code}")
+        return False
