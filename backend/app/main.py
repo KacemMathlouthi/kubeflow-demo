@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routes.llm_route import router as llm_router
+
 app = FastAPI(title="Kubeflow Demo API")
 
 app.add_middleware(
@@ -10,3 +12,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(llm_router, tags=["LLM"])
