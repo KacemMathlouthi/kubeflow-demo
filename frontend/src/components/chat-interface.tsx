@@ -74,11 +74,21 @@ export default function ChatInterface() {
             <Button
               variant="outline"
               className="hidden md:flex items-center space-x-2"
+              onClick={() => window.open("https://kacem-mathlouthi.tn", "_blank")}
+            >
+                <ArrowRight className="h-4 w-4" />
+                <span>Return to my Portfolio</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              className="hidden md:flex items-center space-x-2"
               onClick={() => window.open("https://github.com/kubeflow/kubeflow", "_blank")}
             >
               <Github className="h-4 w-4" />
               <span>GitHub</span>
             </Button>
+
             <Button
               className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               onClick={() => window.open("https://www.kubeflow.org/docs/", "_blank")}
