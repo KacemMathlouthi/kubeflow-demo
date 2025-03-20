@@ -1,6 +1,7 @@
 import './index.css';
 import ImplementedFeatures from './components/implemented-features';
 import UpcomingFeatures from './components/upcoming-features';
+import RagDiagram from './components/RagDiagram';
 
 function App() {
   return (    
@@ -18,6 +19,9 @@ function App() {
           </div>
           <div className="mt-10"> 
             <ImplementedFeatures />
+          </div>
+          <div className="mt-10"> 
+            <RagDiagram />
           </div>
         </div>
   );
