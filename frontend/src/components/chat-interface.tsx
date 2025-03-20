@@ -32,9 +32,9 @@ import UpcomingFeatures from "@/components/upcoming-features"
 import RagDiagram from "@/components/rag-diagram"
 
 export default function ChatInterface() {
-  const [llmProvider, setLlmProvider] = useState("openai")
-  const [model, setModel] = useState("gpt-4o")
-  const [temperature, setTemperature] = useState(0.7)
+  const [llmProvider, setLlmProvider] = useState("Meta")
+  const [model, setModel] = useState("llama-3.3")
+  const [temperature, setTemperature] = useState(0.5)
   const [maxTokens, setMaxTokens] = useState(4000)
   const [activeTab, setActiveTab] = useState("chat")
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -65,9 +65,9 @@ export default function ChatInterface() {
             < img src="/logo.png" className="h-10 w-10 animate-float" />
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                Kubeflow RAG Chatbot
+                Kubeflow RAG Chatbot Demo
               </h1>
-              <p className="text-muted-foreground">Intelligent documentation assistant powered by RAG</p>
+              <p className="text-muted-foreground">Empowering Kubeflow Documentation with LLMs</p>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -116,8 +116,7 @@ export default function ChatInterface() {
                       </div>
                       <h3 className="text-xl font-semibold mb-2">Welcome to Kubeflow Assistant</h3>
                       <p className="mb-8 max-w-md">
-                        Ask questions about Kubeflow documentation, issues, or general information. I'll provide
-                        detailed answers with references.
+                        Ask questions about Kubeflow documentation, issues, or general information.
                       </p>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-lg">
                         {[
@@ -135,7 +134,7 @@ export default function ChatInterface() {
                           },
                           {
                             icon: <Cpu className="h-4 w-4" />,
-                            text: "Explain Kubeflow Pipelines",
+                            text: "Explain Kubeflow Trainer",
                           },
                         ].map((suggestion) => (
                           <Button
@@ -245,8 +244,7 @@ export default function ChatInterface() {
                       LLM Generation
                     </h4>
                     <p className="text-sm text-muted-foreground">
-                      The retrieved documents are used as context for the LLM to generate accurate, contextual responses
-                      with proper citations.
+                      The retrieved documents are used as context for the LLM to generate accurate, contextual responses.
                     </p>
                   </div>
 
@@ -295,35 +293,35 @@ export default function ChatInterface() {
                 <div className="space-y-6">
                   <div className="space-y-3">
                     <Label htmlFor="provider" className="text-sm font-medium">
-                      LLM Provider
+                      LLM Developer
                     </Label>
                     <Select value={llmProvider} onValueChange={setLlmProvider}>
                       <SelectTrigger id="provider" className="bg-background/80 backdrop-blur-sm">
                         <SelectValue placeholder="Select provider" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="openai">
-                          <div className="flex items-center">
-                            <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
-                            OpenAI
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="anthropic">
-                          <div className="flex items-center">
-                            <div className="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
-                            Anthropic
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="mistral">
+                        <SelectItem value="Meta">
                           <div className="flex items-center">
                             <div className="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
-                            Mistral AI
+                            Meta
                           </div>
                         </SelectItem>
-                        <SelectItem value="cohere">
+                        <SelectItem value="Google">
+                          <div className="flex items-center">
+                            <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+                            Google
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Mistral">
+                          <div className="flex items-center">
+                            <div className="w-4 h-4 rounded-full bg-orange-500 mr-2"></div>
+                            Mistral
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="Alibaba">
                           <div className="flex items-center">
                             <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
-                            Cohere
+                            Alibaba Cloud
                           </div>
                         </SelectItem>
                       </SelectContent>
@@ -339,31 +337,25 @@ export default function ChatInterface() {
                         <SelectValue placeholder="Select model" />
                       </SelectTrigger>
                       <SelectContent>
-                        {llmProvider === "openai" && (
+                        {llmProvider === "Meta" && (
                           <>
-                            <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                            <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
-                            <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
+                            <SelectItem value="llama-3.3">llama-3.3-70b-versatile</SelectItem>
+                            <SelectItem value="llama-3.1">llama-3.1-8b-instant</SelectItem>
                           </>
                         )}
-                        {llmProvider === "anthropic" && (
+                        {llmProvider === "Google" && (
                           <>
-                            <SelectItem value="claude-3-opus">Claude 3 Opus</SelectItem>
-                            <SelectItem value="claude-3-sonnet">Claude 3 Sonnet</SelectItem>
-                            <SelectItem value="claude-3-haiku">Claude 3 Haiku</SelectItem>
+                            <SelectItem value="gemma2-9b">gemma2-9b-it</SelectItem>
                           </>
                         )}
-                        {llmProvider === "mistral" && (
+                        {llmProvider === "Mistral" && (
                           <>
-                            <SelectItem value="mistral-large">Mistral Large</SelectItem>
-                            <SelectItem value="mistral-medium">Mistral Medium</SelectItem>
-                            <SelectItem value="mistral-small">Mistral Small</SelectItem>
+                            <SelectItem value="mixtral-8x7b">mixtral-8x7b-32768</SelectItem>
                           </>
                         )}
-                        {llmProvider === "cohere" && (
+                        {llmProvider === "Alibaba" && (
                           <>
-                            <SelectItem value="command-r">Command R</SelectItem>
-                            <SelectItem value="command-r-plus">Command R+</SelectItem>
+                            <SelectItem value="qwen-2.5">qwen-2.5-32b</SelectItem>
                           </>
                         )}
                       </SelectContent>
