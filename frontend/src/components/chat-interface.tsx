@@ -30,6 +30,7 @@ import ChatMessage from "@/components/chat-message"
 import ImplementedFeatures from "@/components/implemented-features"
 import UpcomingFeatures from "@/components/upcoming-features"
 import RagDiagram from "@/components/rag-diagram"
+import Footer from "./footer"
 
 export default function ChatInterface() {
   const [llmProvider, setLlmProvider] = useState("Meta")
@@ -427,7 +428,9 @@ export default function ChatInterface() {
           </Tabs>
         </div>
       </div>
+      <Footer />
     </div>
+    
   )
 }
 
