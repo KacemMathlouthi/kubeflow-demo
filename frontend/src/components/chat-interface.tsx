@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { useChat } from "ai/react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -31,6 +30,13 @@ import UpcomingFeatures from "@/components/upcoming-features"
 import RagDiagram from "@/components/rag-diagram"
 import Footer from "./footer"
 
+// Define Message type to replace useChat's Message type
+interface Message {
+  id: string;
+  content: string;
+  role: 'user' | 'assistant';
+}
+
 export default function ChatInterface() {
   const [llmProvider, setLlmProvider] = useState("Meta")
   const [model, setModel] = useState("llama-3.3")
@@ -38,16 +44,81 @@ export default function ChatInterface() {
   const [maxTokens, setMaxTokens] = useState(4000)
   const [activeTab, setActiveTab] = useState("chat")
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  
+  // Replace useChat with WebSocket logic
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [socket, setSocket] = useState<WebSocket | null>(null)
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: "/api/chat",
-    body: {
-      llmProvider,
-      model,
-      temperature,
-      maxTokens,
-    },
-  })
+  useEffect(() => {
+    // Create WebSocket connection
+    const wsUrl = "ws://localhost:8000/ws/chat";
+    const newSocket = new WebSocket(wsUrl);
+    
+    newSocket.onopen = () => {
+      console.log('WebSocket connection established');
+    };
+    
+    newSocket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setMessages((prev) => [...prev, { 
+        id: Date.now().toString(), 
+        content: data.content, 
+        role: 'assistant' 
+      }]);
+      setIsLoading(false);
+    };
+    
+    newSocket.onerror = (error) => {
+      console.error('WebSocket error:', error);
+      setIsLoading(false);
+    };
+    
+    newSocket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    setSocket(newSocket);
+    
+    // Cleanup on unmount
+    return () => {
+      newSocket.close();
+    };
+  }, []);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim() || !socket || socket.readyState !== WebSocket.OPEN) return;
+
+    // Add user message to the UI
+    setMessages((prev) => [...prev, { 
+      id: Date.now().toString(), 
+      content: input, 
+      role: 'user' 
+    }]);
+    
+    // Set loading state
+    setIsLoading(true);
+    
+    // Send message with config via WebSocket
+    socket.send(JSON.stringify({
+      message: input,
+      config: {
+        llmProvider,
+        model,
+        temperature,
+        maxTokens,
+      }
+    }));
+    
+    // Clear input field
+    setInput('');
+  };
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -155,8 +226,25 @@ export default function ChatInterface() {
                             variant="outline"
                             className="justify-start text-left h-auto py-2 group transition-all duration-200 hover:border-primary/50 hover:bg-primary/5"
                             onClick={() => {
-                              handleInputChange({ target: { value: suggestion.text } } as any)
-                              handleSubmit({ preventDefault: () => {} } as any)
+                              setInput(suggestion.text);
+                              if (socket && socket.readyState === WebSocket.OPEN) {
+                                setMessages((prev) => [...prev, { 
+                                  id: Date.now().toString(), 
+                                  content: suggestion.text, 
+                                  role: 'user' 
+                                }]);
+                                setIsLoading(true);
+                                socket.send(JSON.stringify({
+                                  message: suggestion.text,
+                                  config: {
+                                    llmProvider,
+                                    model,
+                                    temperature,
+                                    maxTokens,
+                                  }
+                                }));
+                                setInput('');
+                              }
                             }}
                           >
                             <div className="mr-2 h-6 w-6 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10">
