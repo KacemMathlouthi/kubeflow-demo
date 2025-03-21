@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from typing import List, Tuple, Dict
 import re
 from langchain.text_splitter import TokenTextSplitter
+from app.services.weaviate_service import add_documentation_item
 
 BASE_URL = "https://gitingest.com"  # Base URL for constructing the full download link
 
@@ -207,3 +208,37 @@ async def chunk_repository_contents(repository_name: str, chunk_size: int = 1000
     
     print(f"Created {len(chunked_contents)} chunks from {len(file_contents)} files")
     return chunked_contents
+
+
+async def embed_repository_to_vector_db(repository_name: str, chunk_size: int = 1000, chunk_overlap: int = 100):
+    """
+    Chunks the repository contents and embeds them in the vector database.
+    
+    Args:
+        repository_name (str): The name of the repository (for example "kubeflow/website").
+        chunk_size (int, optional): The size of each chunk in tokens. Defaults to 1000.
+        chunk_overlap (int, optional): The number of overlapping tokens between chunks. Defaults to 100.
+        
+    Returns:
+        bool: True if all chunks are embedded successfully, False otherwise.
+    """
+    # Get chunked contents
+    chunks = await chunk_repository_contents(repository_name, chunk_size, chunk_overlap)
+    
+    # Counter for successful embeddings
+    successful_embeddings = 0
+    
+    # Embed each chunk in the vector database
+    for chunk in chunks:
+        try:
+            add_documentation_item(
+                documentSource=chunk["documentSource"],
+                documentURL=chunk["documentURL"],
+                documentContent=chunk["documentContent"]
+            )
+            successful_embeddings += 1
+        except Exception as e:
+            print(f"Error embedding chunk: {e}")
+    
+    print(f"Successfully embedded {successful_embeddings} out of {len(chunks)} chunks from repository {repository_name}")
+    return successful_embeddings/len(chunks)
