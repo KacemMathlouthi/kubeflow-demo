@@ -1,8 +1,9 @@
 import os
 import requests
 from bs4 import BeautifulSoup
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import re
+from langchain.text_splitter import TokenTextSplitter
 
 BASE_URL = "https://gitingest.com"  # Base URL for constructing the full download link
 
@@ -170,3 +171,39 @@ async def preprocess_repository_file(repository_name: str) -> List[Tuple[str, st
         if len(content) > 50:
             preprocessed_file_contents.append((filename, content))
     return preprocessed_file_contents
+
+
+async def chunk_repository_contents(repository_name: str, chunk_size: int = 1000, chunk_overlap: int = 100) -> List[Dict[str, str]]:
+    """
+    Chunks the preprocessed repository file contents using TokenTextSplitter.
+    
+    Args:
+        repository_name (str): The name of the repository (for example "kubeflow/website").
+        chunk_size (int, optional): The size of each chunk in tokens. Defaults to 1000.
+        chunk_overlap (int, optional): The number of overlapping tokens between chunks. Defaults to 100.
+        
+    Returns:
+        List[Dict[str, str]]: A list of dictionaries containing the chunked content with metadata.
+    """
+    # Get preprocessed file contents
+    file_contents = await preprocess_repository_file(repository_name)
+    
+    # Initialize the TokenTextSplitter
+    text_splitter = TokenTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    
+    chunked_contents = []
+    
+    for filename, content in file_contents:
+        # Split the content into chunks
+        chunks = text_splitter.split_text(content)
+        
+        # Create a document for each chunk with metadata
+        for i, chunk in enumerate(chunks):
+            chunked_contents.append({
+                "documentSource" : "Github Repository:" + repository_name,
+                "documentURL" : "https://github.com/" + repository_name,
+                "documentContent": chunk,
+            })
+    
+    print(f"Created {len(chunked_contents)} chunks from {len(file_contents)} files")
+    return chunked_contents
