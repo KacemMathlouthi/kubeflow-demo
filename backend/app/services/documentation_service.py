@@ -164,7 +164,7 @@ async def preprocess_repository_file(repository_name: str) -> List[Tuple[str, st
     Args:
         repository_name (str): The name of the repository (for example "kubeflow/website").
     """
-    file_contents = parse_repository_file(repository_name)
+    file_contents = await parse_repository_file(repository_name)
     
     # Preprocess the file content
     preprocessed_file_contents = []
