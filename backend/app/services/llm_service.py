@@ -1,6 +1,6 @@
 from app.core.db import get_groq_client
 from langchain.prompts import PromptTemplate
-
+from app.services.weaviate_service import similarity_search
 
 # Initialize the Groq client
 llm_client = get_groq_client()
@@ -29,12 +29,28 @@ async def get_response(user_message: str):
     """
     Get a response from the LLM using the provided prompt.
     """
+    # Perform Similarity Search based on the user message
+    context = await similarity_search(user_message, top_k=5)
+
+    # Format the Retrieved Snippets with document title, URL, and the content
+    formatted_snippets = []
+    for snippet in context:
+        formatted_snippets.append(
+            {
+                "Documentation URL": snippet.properties.get("documentURL"),
+                "content": snippet.properties.get("documentContent"),
+            }
+        )
+
+    # Format the prompt with real values
+    formatted_prompt = prompt.format(context = str(formatted_snippets))
+
     # Create the chat completion
     chat_completion = llm_client.chat.completions.create(
         messages=[
             {
                 "role": "system",
-                "content": "You are a helpful Kubeflow Documentation assistant that answers questions based on the provided context.",
+                "content": formatted_prompt,
             },
             {"role": "user", "content": user_message},
         ],
