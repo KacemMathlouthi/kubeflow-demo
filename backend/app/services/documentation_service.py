@@ -1,6 +1,8 @@
 import os
 import requests
 from bs4 import BeautifulSoup
+from typing import List, Tuple
+import re
 
 BASE_URL = "https://gitingest.com"  # Base URL for constructing the full download link
 
@@ -58,10 +60,10 @@ async def fetch_download_link(repository_name: str):
 
 async def download_and_save_repository(repository_name: str):
     """
-    Downloads the repository ZIP file from Gitingest and saves it locally.
+    Downloads the repository text file from Gitingest and saves it locally.
 
     Args:
-        repository_name (str): The name of the repository (e.g., "kubeflow-website").
+        repository_name (str): The name of the repository (for example "kubeflow-website").
     """
     # Get the download link
     download_url, session = await fetch_download_link(repository_name)
@@ -84,7 +86,68 @@ async def download_and_save_repository(repository_name: str):
                 file.write(chunk)
 
         print(f"Repository successfully downloaded and saved to: {save_path}")
-        return True
+        return save_path
     else:
         print(f"Failed to download the repository. HTTP Status: {response.status_code}")
-        return False
+        return "Failed to download the repository."
+
+
+def parse_repository_file(file_path: str) -> List[Tuple[str, str]]:
+    """
+    Parse the downloaded repository content file and extract individual file contents.
+    
+    Args:
+        file_path (str): Path to the downloaded repository content file.
+        
+    Returns:
+        List[Tuple[str, str]]: List of tuples containing (filename, content).
+    """
+    try:
+        with open(file_path, 'r', encoding='utf-8', errors='replace') as file:
+            content = file.read()
+        
+        # Separator pattern for the file separators
+        # ================================================
+        # File: (filename)
+        # ================================================
+        separator_pattern = r'={48,}\s*File:\s*(.*?)\s*={48,}'
+        
+        # Find all matches
+        matches = list(re.finditer(separator_pattern, content, re.DOTALL))
+        
+        if not matches:
+            print("No file separators found with the expected pattern.")
+            return []
+        
+        print(f"Found {len(matches)} file separators in the content.")
+        
+        # Extract filenames and positions
+        filenames = [match.group(1).strip() for match in matches]
+        start_positions = [match.start() for match in matches]
+        
+        file_contents = []
+        for i in range(len(start_positions)):
+            # Get current filename
+            filename = filenames[i]
+            
+            # Determine the content start position (end of current separator)
+            match_text = matches[i].group(0)
+            content_start = start_positions[i] + len(match_text)
+            
+            # Determine the content end position (start of next separator or end of file)
+            if i < len(start_positions) - 1:
+                content_end = start_positions[i + 1]
+            else:
+                content_end = len(content)
+            
+            # Extract the file content
+            file_content = content[content_start:content_end].strip()
+            
+            # Add the file info to the list
+            file_contents.append((filename, file_content))
+        
+        return file_contents
+    
+    except Exception as e:
+        print(f"Error parsing repository file: {e}")
+        return []
