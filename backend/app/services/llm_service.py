@@ -25,7 +25,11 @@ prompt = PromptTemplate(
 )
 
 
-async def get_response(user_message: str):
+async def get_response(
+        user_message: str,
+        llm_model: str = "llama-3.3-70b-versatile",
+        temperature: float = 0.5,
+        max_tokens: int = 8192):
     """
     Get a response from the LLM using the provided prompt.
     """
@@ -54,7 +58,9 @@ async def get_response(user_message: str):
             },
             {"role": "user", "content": user_message},
         ],
-        model="llama-3.3-70b-versatile",
+        model=llm_model,
+        temperature=temperature,
+        max_completion_tokens=max_tokens,
         stream=False,
     )
 

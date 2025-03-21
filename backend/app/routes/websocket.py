@@ -7,9 +7,8 @@ router = APIRouter()
 manager = ConnectionManager()
 
 
-@router.websocket("/ws/chat")
-async def chat_websocket(websocket: WebSocket):
-
+@router.websocket("/ws/chat/{llm_model}/{temperature}/{max_tokens}")
+async def chat_websocket(websocket: WebSocket, llm_model: str, temperature: float, max_tokens: int):
     # Create a new conversation
     conversation_id = str(uuid4())
 
@@ -22,7 +21,10 @@ async def chat_websocket(websocket: WebSocket):
             user_message = await websocket.receive_text()
 
             # Get bot's response using the LLM service
-            llm_response = await get_response(user_message=user_message)
+            llm_response = await get_response(user_message=user_message,
+                                              llm_model=llm_model,
+                                              temperature=temperature,
+                                              max_tokens=max_tokens)
 
             # Send response back to client
             await manager.send_message(conversation_id, llm_response)
