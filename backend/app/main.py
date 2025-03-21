@@ -5,6 +5,7 @@ from app.core.config import settings
 from app.routes.llm_route import router as llm_router
 from app.routes.documentation_route import router as documentation_router
 from app.routes.embedding_route import router as embedding_router
+from app.routes.weaviate_route import router as weaviate_router
 
 app = FastAPI(title="Kubeflow Demo API")
 
@@ -19,3 +20,4 @@ app.add_middleware(
 app.include_router(llm_router, tags=["LLM"])
 app.include_router(documentation_router, tags=["Documentation"])
 app.include_router(embedding_router, tags=["Embedding"])
+app.include_router(weaviate_router, tags=["Weaviate"])

@@ -9,6 +9,7 @@ client = get_weaviate_client()
 
 DOCUMENTATION_CLASS_NAME = "KubeflowDocumentation"
 
+
 async def check_collection_exists(class_name=DOCUMENTATION_CLASS_NAME):
     """
     Check if a collection (class) exists in Weaviate.
@@ -18,6 +19,7 @@ async def check_collection_exists(class_name=DOCUMENTATION_CLASS_NAME):
     except Exception as e:
         print(f"Error checking collection existence: {e}")
         return False
+
 
 async def create_documentation_collection(class_name=DOCUMENTATION_CLASS_NAME):
     """
@@ -30,10 +32,18 @@ async def create_documentation_collection(class_name=DOCUMENTATION_CLASS_NAME):
                 name=class_name,
                 vectorizer_config=Configure.Vectorizer.none(),
                 properties=[
-                    Property(name="documentSource", data_type=DataType.TEXT), # Source of the document (GitHub, Article, whatever...)
-                    Property(name="documentURL", data_type=DataType.TEXT), # URL of the document (for citations later)
-                    Property(name="documentContent", data_type=DataType.TEXT), # The Chunk to be stored
-                    Property(name="created_at", data_type=DataType.DATE), # Timestamp (maybe useful later in case there is update to the documentation)
+                    Property(
+                        name="documentSource", data_type=DataType.TEXT
+                    ),  # Source of the document (GitHub, Article, whatever...)
+                    Property(
+                        name="documentURL", data_type=DataType.TEXT
+                    ),  # URL of the document (for citations later)
+                    Property(
+                        name="documentContent", data_type=DataType.TEXT
+                    ),  # The Chunk to be stored
+                    Property(
+                        name="created_at", data_type=DataType.DATE
+                    ),  # Timestamp (maybe useful later in case there is update to the documentation)
                 ],
                 vector_index_config=Configure.VectorIndex.hnsw(
                     distance_metric=VectorDistances.COSINE,
@@ -70,8 +80,8 @@ def add_documentation_item(documentSource, documentURL, documentContent):
         result = documentation_collection.data.insert(
             properties=documentation_item, vector=vector
         )
-        return {result : documentation_item}
-    
+        return {result: documentation_item}
+
     except Exception as e:
         print(f"Error adding documentation item: {e}")
         return None
