@@ -61,10 +61,9 @@ export default function ChatInterface() {
     };
     
     newSocket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
       setMessages((prev) => [...prev, { 
         id: Date.now().toString(), 
-        content: data.content, 
+        content: event.data, 
         role: 'assistant' 
       }]);
       setIsLoading(false);
