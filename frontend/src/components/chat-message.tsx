@@ -3,7 +3,7 @@
 import type { Message } from "ai"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-import { BookOpen, Github, Link, User, Copy, Check, Code } from "lucide-react"
+import {User, Copy, Check, Code } from "lucide-react"
 import { useState } from "react"
 
 interface ChatMessageProps {
@@ -11,25 +11,6 @@ interface ChatMessageProps {
 }
 
 export default function ChatMessage({ message }: ChatMessageProps) {
-  const references =
-    message.role === "assistant"
-      ? [
-          {
-            type: "doc",
-            title: "Kubeflow Documentation",
-            url: "https://www.kubeflow.org/docs/",
-            section: "Getting Started",
-          },
-          {
-            type: "github",
-            title: "Issue #1234",
-            url: "https://github.com/kubeflow/kubeflow/issues/1234",
-            description: "Installation problem on GKE",
-          },
-          { type: "link", title: "Kubeflow Blog", url: "https://blog.kubeflow.org/", description: "Latest updates" },
-        ]
-      : []
-
   // Function to process content and render code blocks
   const processContent = (content: string) => {
     // Split by code blocks
@@ -76,33 +57,6 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           )}
         >
           <div className="prose dark:prose-invert max-w-none">{processContent(message.content)}</div>
-
-          {message.role === "assistant" && references.length > 0 && (
-            <div className="mt-4 pt-3 border-t border-border">
-              <h4 className="text-sm font-semibold mb-2 text-muted-foreground">References:</h4>
-              <div className="flex flex-wrap">
-                {references.map((ref, index) => (
-                  <a
-                    key={index}
-                    href={ref.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={cn(
-                      "reference-tag",
-                      ref.type === "doc" && "reference-tag-doc",
-                      ref.type === "github" && "reference-tag-github",
-                      ref.type === "link" && "reference-tag-link",
-                    )}
-                  >
-                    {ref.type === "doc" && <BookOpen className="h-3 w-3 mr-1" />}
-                    {ref.type === "github" && <Github className="h-3 w-3 mr-1" />}
-                    {ref.type === "link" && <Link className="h-3 w-3 mr-1" />}
-                    <span className="truncate max-w-[150px]">{ref.title}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-          )}
         </Card>
       </div>
     </div>
