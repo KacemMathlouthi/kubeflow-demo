@@ -9,6 +9,8 @@
 
 This is a **full-stack Retrieval-Augmented Generation (RAG)** chatbot designed as a **PoC for GSoC 2024 (Project 12)** with Kubeflow. It combines GitHub-based documentation ingestion, vector search, and LLM-powered responses into an interactive real-time assistant.
 
+![Kubeflow Chatbot UI Screenshot](https://i.imgur.com/nw5jZZj.png)
+
 ---
 
 ## 🧠 How It Works
