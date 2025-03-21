@@ -5,31 +5,31 @@ export default function ImplementedFeatures() {
     const features = [
         {
             title: "Data Loading & Preprocessing",
-            description: "Created a custom data loader for loading and preprocessing Any Kubeflow Github Repository data. This data is then split based on files, chunked into 1000 token chunks with 100 token overlap. I used the Gitingest API to get the whole repository into one file.",
+            description: "I built a custom data loader to fetch and preprocess any Kubeflow GitHub repository using the Gitingest API. The data is split by file and chunked into 1000-token segments with 100-token overlap. For this demo, i just used the Kubeflow/website repository.",
         },
         {
-            title: "Embedding Generation with OpenAI model `text-embedding-ada-002`",
-            description: "Transforms documentation chunks into vector embeddings using OpenAI model `text-embedding-ada-002` model.",
+            title: "Embedding Generation",
+            description: "I generated vector embeddings from documentation chunks using OpenAI’s `text-embedding-ada-002` model for semantic understanding.",
         },
         {
-          title: "Weaviate Vector Database",
-          description: "I used Weaviate as a vector database to store and retrieve embeddings of Kubeflow documentation. I used Cosine Similarity to find the most similar embeddings.",
+            title: "Weaviate Vector Database",
+            description: "I integrated Weaviate as the vector store, using Cosine Similarity for efficient semantic search over Kubeflow documentation embeddings.",
         },
         {
             title: "LLM Integration",
-            description: "I integrated an LLM to generate meaningful responses based on the retrieved chunks of documentation. The chatbot currently has no memory.",
+            description: "I connected an LLM to generate accurate, context-aware responses based on retrieved documentation chunks. The chatbot currently operates statelessly.",
         },
         {
-          title: "LLM Configuration",
-          description: "I used GROQ as an llm provider, you can choose from groq supported models, and configure the temperature and max tokens in the settings section.",
+            title: "LLM Configuration",
+            description: "I used GROQ as the LLM provider and implemented configurable model selection, temperature, and max tokens in the settings.",
         },
         {
-          title: "Markdown Rendering for Enhanced Responses",
-          description: "Supports rich text formatting in bot responses, allowing structured information presentation with Markdown features such as bold text, lists, hyperlinks and code blocks (you can copy code snippets directly).",
+            title: "Markdown Rendering",
+            description: "I enabled Markdown support in responses, allowing for code blocks, bold text, lists, and clickable links for better readability.",
         },
         {
             title: "Interactive Chat Interface",
-            description: "A responsive chat UI, enabling smooth interactions. Real-time communication between the frontend and backend is handled via WebSockets.",
+            description: "I developed a responsive real-time chat UI with WebSocket communication between frontend and backend for seamless interaction.",
         },
     ];      
 
