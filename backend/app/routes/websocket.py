@@ -7,8 +7,16 @@ router = APIRouter()
 manager = ConnectionManager()
 
 
-@router.websocket("/ws/chat/{llm_model}/{temperature}/{max_tokens}")
-async def chat_websocket(websocket: WebSocket, llm_model: str, temperature: float, max_tokens: int):
+@router.websocket("/ws/chat")
+async def chat_websocket(
+    websocket: WebSocket,
+    llm_model: str = "llama-3.3-70b-versatile",
+    temperature: float = 0.5,
+    max_tokens: int = 8192
+    ):
+    """
+    WebSocket endpoint for the chat service.
+    """
     # Create a new conversation
     conversation_id = str(uuid4())
 

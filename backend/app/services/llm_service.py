@@ -60,7 +60,7 @@ async def get_response(
         ],
         model=llm_model,
         temperature=temperature,
-        max_completion_tokens=max_tokens,
+        max_tokens=max_tokens,
         stream=False,
     )
 

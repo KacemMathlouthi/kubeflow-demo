@@ -39,7 +39,7 @@ interface Message {
 
 export default function ChatInterface() {
   const [llmProvider, setLlmProvider] = useState("Meta")
-  const [model, setModel] = useState("llama-3.3")
+  const [model, setModel] = useState("llama-3.3-70b-versatile")
   const [temperature, setTemperature] = useState(0.5)
   const [maxTokens, setMaxTokens] = useState(4000)
   const [activeTab, setActiveTab] = useState("chat")
@@ -52,39 +52,42 @@ export default function ChatInterface() {
   const [socket, setSocket] = useState<WebSocket | null>(null)
 
   useEffect(() => {
-    // Create WebSocket connection
-    const wsUrl = "ws://localhost:8000/ws/chat";
+    if (!model || temperature === null || !maxTokens) return;
+  
+    const wsUrl = `ws://localhost:8000/ws/chat?llm_model=${model}&temperature=${temperature}&max_tokens=${maxTokens}`;
     const newSocket = new WebSocket(wsUrl);
-    
+  
     newSocket.onopen = () => {
-      console.log('WebSocket connection established');
+      console.log("WebSocket connection established");
     };
-    
+  
     newSocket.onmessage = (event) => {
-      setMessages((prev) => [...prev, { 
-        id: Date.now().toString(), 
-        content: event.data, 
-        role: 'assistant' 
-      }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          content: event.data,
+          role: "assistant",
+        },
+      ]);
       setIsLoading(false);
     };
-    
+  
     newSocket.onerror = (error) => {
-      console.error('WebSocket error:', error);
+      console.error("WebSocket error:", error);
       setIsLoading(false);
     };
-    
+  
     newSocket.onclose = () => {
-      console.log('WebSocket connection closed');
+      console.log("WebSocket connection closed");
     };
-
+  
     setSocket(newSocket);
-    
-    // Cleanup on unmount
+  
     return () => {
       newSocket.close();
     };
-  }, []);
+  }, [model, temperature, maxTokens]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
@@ -105,15 +108,7 @@ export default function ChatInterface() {
     setIsLoading(true);
     
     // Send message with config via WebSocket
-    socket.send(JSON.stringify({
-      message: input,
-      config: {
-        llmProvider,
-        model,
-        temperature,
-        maxTokens,
-      }
-    }));
+    socket.send(input);
     
     // Clear input field
     setInput('');
@@ -438,23 +433,23 @@ export default function ChatInterface() {
                       <SelectContent>
                         {llmProvider === "Meta" && (
                           <>
-                            <SelectItem value="llama-3.3">llama-3.3-70b-versatile</SelectItem>
-                            <SelectItem value="llama-3.1">llama-3.1-8b-instant</SelectItem>
+                            <SelectItem value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</SelectItem>
+                            <SelectItem value="llama-3.1-8b-instant">llama-3.1-8b-instant</SelectItem>
                           </>
                         )}
                         {llmProvider === "Google" && (
                           <>
-                            <SelectItem value="gemma2-9b">gemma2-9b-it</SelectItem>
+                            <SelectItem value="gemma2-9b-it">gemma2-9b-it</SelectItem>
                           </>
                         )}
                         {llmProvider === "Mistral" && (
                           <>
-                            <SelectItem value="mixtral-8x7b">mixtral-8x7b-32768</SelectItem>
+                            <SelectItem value="mixtral-8x7b-32768">mixtral-8x7b-32768</SelectItem>
                           </>
                         )}
                         {llmProvider === "Alibaba" && (
                           <>
-                            <SelectItem value="qwen-2.5">qwen-2.5-32b</SelectItem>
+                            <SelectItem value="qwen-2.5-32b">qwen-2.5-32b</SelectItem>
                           </>
                         )}
                       </SelectContent>
