@@ -58,31 +58,33 @@ export default function ChatInterface() {
   }, [messages])
 
   return (
-    <div className="container mx-auto p-4 min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="py-6 mb-6 border-b">
+    <div className="container mx-auto p-4 flex flex-col h-screen">
+      {/* Header - reduced vertical padding */}
+      <header className="py-4 mb-4 border-b flex-shrink-0">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-3 mb-4 md:mb-0">
-            < img src="/logo.png" className="h-10 w-10 animate-float" />
+            <img src="/logo.png" className="h-8 w-8 animate-float" />
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Kubeflow RAG Chatbot Demo
               </h1>
-              <p className="text-muted-foreground">Empowering Kubeflow Documentation with LLMs</p>
+              <p className="text-sm text-muted-foreground">Empowering Kubeflow Documentation with LLMs</p>
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
             <Button
               variant="outline"
+              size="sm"
               className="hidden md:flex items-center space-x-2"
               onClick={() => window.open("https://kacem-mathlouthi.tn", "_blank")}
             >
-                <ArrowRight className="h-4 w-4" />
-                <span>Return to my Portfolio</span>
+              <ArrowRight className="h-4 w-4" />
+              <span>Portfolio</span>
             </Button>
 
             <Button
               variant="outline"
+              size="sm"
               className="hidden md:flex items-center space-x-2"
               onClick={() => window.open("https://github.com/KacemMathlouthi/kubeflow-demo", "_blank")}
             >
@@ -91,22 +93,23 @@ export default function ChatInterface() {
             </Button>
 
             <Button
+              size="sm"
               className="hidden md:flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
               onClick={() => window.open("https://www.kubeflow.org/docs/", "_blank")}
             >
               <BookOpen className="h-4 w-4" />
-              <span>Documentation</span>
+              <span>Kubeflow Docs</span>
             </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Chat Section */}
-        <div className="lg:col-span-2 flex flex-col space-y-4">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-2 mb-4">
+      {/* Main Content - flex-1 to take all available space */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
+        {/* Chat Section - flex and min-h-0 for proper scrolling */}
+        <div className="lg:col-span-2 flex flex-col min-h-0">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col min-h-0">
+            <TabsList className="grid grid-cols-2 mb-2 flex-shrink-0">
               <TabsTrigger value="chat" className="flex items-center space-x-2">
                 <MessageSquare className="h-4 w-4" />
                 <span>Chat</span>
@@ -129,7 +132,7 @@ export default function ChatInterface() {
                       <p className="mb-8 max-w-md">
                         Ask questions about Kubeflow documentation, issues, or general information.
                       </p>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-lg">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 w-full max-w-lg">
                         {[
                           {
                             icon: <Search className="h-4 w-4" />,
@@ -151,16 +154,16 @@ export default function ChatInterface() {
                           <Button
                             key={suggestion.text}
                             variant="outline"
-                            className="justify-start text-left h-auto py-3 group transition-all duration-200 hover:border-primary/50 hover:bg-primary/5"
+                            className="justify-start text-left h-auto py-2 group transition-all duration-200 hover:border-primary/50 hover:bg-primary/5"
                             onClick={() => {
                               handleInputChange({ target: { value: suggestion.text } } as any)
                               handleSubmit({ preventDefault: () => {} } as any)
                             }}
                           >
-                            <div className="mr-3 h-8 w-8 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10">
+                            <div className="mr-2 h-6 w-6 rounded-full bg-muted flex items-center justify-center group-hover:bg-primary/10">
                               {suggestion.icon}
                             </div>
-                            <span>{suggestion.text}</span>
+                            <span className="text-sm">{suggestion.text}</span>
                           </Button>
                         ))}
                       </div>
@@ -178,11 +181,11 @@ export default function ChatInterface() {
                       ))}
                       {isLoading && (
                         <div className="flex items-start space-x-4 animate-fade-in">
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                            <img src="/logo.png" className="h-6 w-6" />
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <img src="/logo.png" className="h-5 w-5" />
                           </div>
                           <div className="flex-1">
-                            <div className="typing-indicator mt-3">
+                            <div className="typing-indicator mt-2">
                               <span></span>
                               <span></span>
                             </div>
@@ -194,12 +197,12 @@ export default function ChatInterface() {
                   )}
                 </div>
 
-                <form onSubmit={handleSubmit} className="relative">
+                <form onSubmit={handleSubmit} className="relative flex-shrink-0">
                   <Input
                     value={input}
                     onChange={handleInputChange}
                     placeholder="Ask about Kubeflow..."
-                    className="pr-12 py-6 bg-background/80 backdrop-blur-sm border-2 shadow-lg"
+                    className="pr-12 py-5 bg-background/80 backdrop-blur-sm border-2 shadow-lg"
                     disabled={isLoading}
                   />
                   <Button
@@ -243,7 +246,7 @@ export default function ChatInterface() {
                       <Search className="h-4 w-4 mr-2 text-purple-500" />
                       Semantic Search
                     </h4>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       When you ask a question, the system finds the most relevant documents using vector similarity
                       search.
                     </p>
@@ -274,64 +277,64 @@ export default function ChatInterface() {
           </Tabs>
         </div>
 
-        {/* Settings Panel */}
-        <div className="space-y-4">
-          <Tabs defaultValue="settings">
-            <TabsList className="grid grid-cols-3 mb-4">
+        {/* Settings Panel - with proper overflow handling */}
+        <div className="flex flex-col min-h-0">
+          <Tabs defaultValue="settings" className="flex flex-col min-h-0">
+            <TabsList className="grid grid-cols-3 mb-2 flex-shrink-0">
               <TabsTrigger value="settings" className="flex items-center space-x-2">
                 <Settings className="h-4 w-4" />
-                <span className="hidden sm:inline">Settings</span>
+                <span className="hidden sm:inline text-xs">Settings</span>
               </TabsTrigger>
               <TabsTrigger value="implemented" className="flex items-center space-x-2">
                 <FileCode className="h-4 w-4" />
-                <span className="hidden sm:inline">Implemented</span>
+                <span className="hidden sm:inline text-xs">Implemented</span>
               </TabsTrigger>
               <TabsTrigger value="upcoming" className="flex items-center space-x-2">
                 <BarChart className="h-4 w-4" />
-                <span className="hidden sm:inline">Upcoming</span>
+                <span className="hidden sm:inline text-xs">Upcoming</span>
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="settings" className="space-y-4">
-              <Card className="p-6 shadow-lg border-2 border-border/50 bg-card/50 backdrop-blur-sm">
-                <h3 className="text-lg font-bold mb-4 flex items-center">
-                  <Cpu className="h-5 w-5 mr-2 text-blue-500" />
+            <TabsContent value="settings" className="flex-1 overflow-hidden data-[state=active]:flex flex-col">
+              <Card className="p-4 shadow-lg border-2 border-border/50 bg-card/50 backdrop-blur-sm overflow-y-auto h-full">
+                <h3 className="text-md font-bold mb-3 flex items-center">
+                  <Cpu className="h-4 w-4 mr-2 text-blue-500" />
                   <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                     LLM Configuration
                   </span>
                 </h3>
 
-                <div className="space-y-6">
-                  <div className="space-y-3">
-                    <Label htmlFor="provider" className="text-sm font-medium">
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="provider" className="text-xs font-medium">
                       LLM Developer
                     </Label>
                     <Select value={llmProvider} onValueChange={setLlmProvider}>
-                      <SelectTrigger id="provider" className="bg-background/80 backdrop-blur-sm">
+                      <SelectTrigger id="provider" className="bg-background/80 backdrop-blur-sm text-sm h-8">
                         <SelectValue placeholder="Select provider" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="Meta">
                           <div className="flex items-center">
-                            <div className="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
+                            <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
                             Meta
                           </div>
                         </SelectItem>
                         <SelectItem value="Google">
                           <div className="flex items-center">
-                            <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+                            <div className="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
                             Google
                           </div>
                         </SelectItem>
                         <SelectItem value="Mistral">
                           <div className="flex items-center">
-                            <div className="w-4 h-4 rounded-full bg-orange-500 mr-2"></div>
+                            <div className="w-3 h-3 rounded-full bg-orange-500 mr-2"></div>
                             Mistral
                           </div>
                         </SelectItem>
                         <SelectItem value="Alibaba">
                           <div className="flex items-center">
-                            <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
+                            <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
                             Alibaba Cloud
                           </div>
                         </SelectItem>
@@ -339,12 +342,12 @@ export default function ChatInterface() {
                     </Select>
                   </div>
 
-                  <div className="space-y-3">
-                    <Label htmlFor="model" className="text-sm font-medium">
+                  <div className="space-y-2">
+                    <Label htmlFor="model" className="text-xs font-medium">
                       Model
                     </Label>
                     <Select value={model} onValueChange={setModel}>
-                      <SelectTrigger id="model" className="bg-background/80 backdrop-blur-sm">
+                      <SelectTrigger id="model" className="bg-background/80 backdrop-blur-sm text-sm h-8">
                         <SelectValue placeholder="Select model" />
                       </SelectTrigger>
                       <SelectContent>
@@ -373,12 +376,12 @@ export default function ChatInterface() {
                     </Select>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor="temperature" className="text-sm font-medium">
+                      <Label htmlFor="temperature" className="text-xs font-medium">
                         Temperature
                       </Label>
-                      <span className="text-sm font-mono bg-muted px-2 py-1 rounded">{temperature.toFixed(1)}</span>
+                      <span className="text-xs font-mono bg-muted px-2 py-0.5 rounded">{temperature.toFixed(1)}</span>
                     </div>
                     <Slider
                       id="temperature"
@@ -387,19 +390,19 @@ export default function ChatInterface() {
                       step={0.1}
                       value={[temperature]}
                       onValueChange={(value) => setTemperature(value[0])}
-                      className="py-2"
+                      className="py-1"
                     />
                     <p className="text-xs text-muted-foreground">
                       Lower values produce more consistent outputs, higher values more creative ones.
                     </p>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor="max-tokens" className="text-sm font-medium">
+                      <Label htmlFor="max-tokens" className="text-xs font-medium">
                         Max Tokens
                       </Label>
-                      <span className="text-sm font-mono bg-muted px-2 py-1 rounded">{maxTokens}</span>
+                      <span className="text-xs font-mono bg-muted px-2 py-0.5 rounded">{maxTokens}</span>
                     </div>
                     <Slider
                       id="max-tokens"
@@ -408,7 +411,7 @@ export default function ChatInterface() {
                       step={1000}
                       value={[maxTokens]}
                       onValueChange={(value) => setMaxTokens(value[0])}
-                      className="py-2"
+                      className="py-1"
                     />
                     <p className="text-xs text-muted-foreground">
                       Maximum number of tokens to generate in the response.
@@ -418,19 +421,21 @@ export default function ChatInterface() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="implemented">
-              <ImplementedFeatures />
+            <TabsContent value="implemented" className="flex-1 overflow-hidden data-[state=active]:flex">
+              <div className="overflow-y-auto h-full">
+                <ImplementedFeatures />
+              </div>
             </TabsContent>
 
-            <TabsContent value="upcoming">
-              <UpcomingFeatures />
+            <TabsContent value="upcoming" className="flex-1 overflow-hidden data-[state=active]:flex">
+              <div className="overflow-y-auto h-full">
+                <UpcomingFeatures />
+              </div>
             </TabsContent>
           </Tabs>
         </div>
-      </div>
+      </div>      
       <Footer />
     </div>
-    
   )
 }
-
