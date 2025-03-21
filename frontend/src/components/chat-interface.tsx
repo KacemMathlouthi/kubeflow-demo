@@ -52,6 +52,18 @@ export default function ChatInterface() {
   const [socket, setSocket] = useState<WebSocket | null>(null)
 
   useEffect(() => {
+    if (llmProvider === "Meta") {
+      setModel("llama-3.3-70b-versatile")
+    } else if (llmProvider === "Google") {
+      setModel("gemma2-9b-it")
+    } else if (llmProvider === "Mistral") {
+      setModel("mixtral-8x7b-32768")
+    } else if (llmProvider === "Alibaba") {
+      setModel("qwen-2.5-32b")
+    }
+  }, [llmProvider])
+
+  useEffect(() => {
     if (!model || temperature === null || !maxTokens) return;
   
     const wsUrl = `ws://localhost:8000/ws/chat?llm_model=${model}&temperature=${temperature}&max_tokens=${maxTokens}`;
