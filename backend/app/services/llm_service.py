@@ -1,7 +1,28 @@
 from app.core.db import get_groq_client
+from langchain.prompts import PromptTemplate
+
 
 # Initialize the Groq client
 llm_client = get_groq_client()
+
+
+prompt_template = """You are a helpful Kubeflow Documentation assistant that answers questions based on the provided context.
+
+Using the information contained in the context, give a comprehensive answer to the question.
+Respond only to the question asked, response should be concise and relevant to the question.
+
+If the answer cannot be deduced from the context, do not give an answer.
+
+Here are some Context (ONLY use if relevant to the question):
+{context}
+"""
+
+
+# PromptTemplate instance
+prompt = PromptTemplate(
+    input_variables=["context"],
+    template=prompt_template,
+)
 
 
 async def get_response(user_message: str):
