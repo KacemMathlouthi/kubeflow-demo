@@ -7,6 +7,7 @@ from app.services.weaviate_service import (
     retrieve_documentation_items,
     delete_documentation_item,
     similarity_search,
+    get_docs_count,
 )
 
 
@@ -87,4 +88,16 @@ async def similarity_search_controller(prompt, top_k=5):
         raise HTTPException(
             status_code=500,
             detail=f"Error performing similarity search: {e}",
+        )
+
+async def get_docs_count_controller():
+    """
+    Controller to get the total number of documents in the collection.
+    """
+    try:
+        return await get_docs_count()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error getting document count: {e}",
         )

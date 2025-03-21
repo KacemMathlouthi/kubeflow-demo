@@ -7,6 +7,7 @@ from app.controllers.weaviate_controller import (
     delete_documentation_item_controller,
     retrieve_documentation_items_controller,
     similarity_search_controller,
+    get_docs_count_controller,
 )
 
 from app.core.db import get_weaviate_client
@@ -108,3 +109,18 @@ async def Get_similar_documentations(prompt: str, top_k: int = 5):
         raise HTTPException(
             status_code=500, detail=f"Error performing similarity search: {e}"
         )
+
+
+@router.get("/vectordb/count")
+async def get_docs_count():
+    """
+    Endpoint to get the total number of documents in the collection.
+    """
+    try:
+        count = await get_docs_count_controller()
+        return {"count": count}
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error getting document count: {e}",
+        )   

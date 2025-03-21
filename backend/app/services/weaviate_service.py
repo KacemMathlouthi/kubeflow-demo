@@ -156,3 +156,14 @@ async def similarity_search(prompt, top_k=5):
     except Exception as e:
         print(f"Error performing similarity search: {e}")
         return []
+
+async def get_docs_count():
+    """
+    Get the total number of documents in the collection.
+    """
+    try:
+        documentation_collection = client.collections.get(DOCUMENTATION_CLASS_NAME)
+        return len(documentation_collection)
+    except Exception as e:
+        print(f"Error getting document count: {e}")     
+        return 0
