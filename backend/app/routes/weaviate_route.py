@@ -52,11 +52,7 @@ async def create_collection():
 
 
 @router.post("/vectordb")
-async def add_documentation(
-    documentSource: str,
-    documentURL: str,
-    documentContent: str,
-):
+async def add_documentation(documentSource: str, documentURL: str, documentContent: str):
     """
     Endpoint to add a new documentations item to the collection.
     """
@@ -71,7 +67,7 @@ async def add_documentation(
 @router.get("/vectordb")
 async def get_documentations(documentSource=None, documentURL=None):
     """
-    Endpoint to retrieve documentations items with optional filters for documentTitle, documentURL, and documentPage.
+    Endpoint to retrieve documentations items with optional filters for documentSource, documentURL.
     """
     try:
         items = await retrieve_documentation_items_controller(

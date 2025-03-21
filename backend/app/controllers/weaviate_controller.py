@@ -32,16 +32,14 @@ async def create_documentations_collection_controller():
         raise HTTPException(status_code=500, detail=f"Error creating collection: {e}")
 
 
-async def add_documentation_item_controller(
-    documentSource, documentURL, documentContent
-):
+async def add_documentation_item_controller(documentSource, documentURL, documentContent):
     """
     Controller function to add a documentation item to the collection.
     """
     try:
         result = add_documentation_item(documentSource, documentURL, documentContent)
         if result:
-            return {"UUID": result}
+            return result
         else:
             raise HTTPException(
                 status_code=500, detail="Failed to add documentations item."
@@ -52,9 +50,7 @@ async def add_documentation_item_controller(
         )
 
 
-async def retrieve_documentation_items_controller(
-    documentSource=None, documentURL=None
-):
+async def retrieve_documentation_items_controller(documentSource=None, documentURL=None):
     """
     Controller function to retrieve documentations items from the collection.
     """
