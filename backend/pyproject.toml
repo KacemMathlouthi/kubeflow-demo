@@ -42,6 +42,7 @@ websockets = "^14.2"
 together = "^1.4.1"
 elevenlabs = "^1.51.0"
 google-genai = "^1.5.0"
+openai = "^1.68.0"
 
 
 [tool.poetry.group.dev.dependencies]

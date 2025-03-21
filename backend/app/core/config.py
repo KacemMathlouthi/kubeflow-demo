@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     # Selected LLM Model
     LLM_MODEL: str
 
+    # Azure OpenAI Config
+    OPENAI_API_KEY: str
+    OPENAI_API_VERSION: str
+    OPENAI_AZURE_ENDPOINT: str
+
     class Config:
         env_file = ".env"
         cache_on_load = False
