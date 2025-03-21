@@ -3,42 +3,59 @@ import { Clock } from "lucide-react"
 
 export default function UpcomingFeatures() {
     const features = [
-        {
-          title: "Improve Conversation Memory",
-          description: "Currently, I am passing memory in the context, but I will explore better and smarter ways to handle long-term memory for more contextual responses.",
-        },
-        {
-          title: "Create a Comprehensive Dataset",
-          description: "For this demo, I scraped the website repo, but I will build a complete dataset that includes all Kubeflow repositories, projects using Kubeflow, Medium articles, press releases, tutorials, GitHub issues, PRs, StackOverflow discussions, and more.",
-        },
-        {
-          title: "Integrate User Reranker Models for Better RAG",
-          description: "I will implement reranker models to refine retrieval quality, ensuring that the most relevant documents are selected before being passed to the LLM.",
-        },
-        {
-          title: "Analyze and Evaluate RAG Behavior",
-          description: "I need to assess how well my retrieval pipeline performs. I can track retrieval accuracy, response relevance, and overall system quality using models like Judge LLM while also creating a test dataset for benchmarking.",
-        },
-        {
-          title: "Implement a User Feedback System",
-          description: "Users should be able to rate responses and report issues. I will build a feedback system to collect insights that will help refine the chatbot’s performance.",
-        },
-        {
-          title: "Create Custom Prompt Templates",
-          description: "I want to give users the ability to create and save their own system prompts for more flexible chatbot interactions.",
-        },
-        {
-          title: "Automate Dataset Updates",
-          description: "I will schedule automatic dataset updates to keep information fresh. This could be event-based or triggered at regular intervals, such as monthly updates.",
-        },
-        {
-          title: "Explore LLM Fine-Tuning",
-          description: "I will experiment with fine-tuning an LLM on Kubeflow-specific data and compare its effectiveness against my current RAG pipeline.",
-        },
-        {
-          title: "Test Advanced Reasoning Models",
-          description: "I will compare reasoning models like DeepSeek R1 against standard LLMs to see if they offer better responses for technical and complex queries.",
-        },
+      // MEMORY & CONTEXT MANAGEMENT
+      {
+        title: "Conversation Memory Integration",
+        description: "LLM conversation memory is currently not implemented. Future updates will include mechanisms for maintaining memory across interactions.",
+      },
+
+      // DATA INGESTION & MANAGEMENT
+      {
+        title: "Comprehensive Dataset Expansion",
+        description: "The dataset will be expanded to include all Kubeflow repositories, user projects, Medium articles, tutorials, GitHub issues, PRs, StackOverflow discussions, and more.",
+      },
+      {
+        title: "Automated Dataset Refresh",
+        description: "A system for automatic dataset updates will be added, triggered by upstream changes or scheduled intervals.",
+      },
+      {
+        title: "Event-Driven Indexing Mechanism",
+        description: "The ingestion pipeline will support event-based triggers to re-index documentation upon updates or releases.",
+      },
+
+      // RAG PIPELINE IMPROVEMENTS
+      {
+        title: "Reranker Model Integration",
+        description: "Reranker models will be added to enhance the retrieval pipeline by selecting the most contextually relevant documents before LLM input.",
+      },
+      {
+        title: "RAG Pipeline Evaluation & Benchmarking",
+        description: "Systematic analysis will be conducted using tools like Judge LLM and custom test datasets to evaluate retrieval quality and response relevance.",
+      },
+      {
+        title: "LLM Fine-Tuning with Kubeflow Trainer",
+        description: "Fine-tuned LLMs on Kubeflow-specific data will be evaluated to improve response accuracy and domain understanding.",
+      },
+      {
+        title: "Evaluation of Advanced Reasoning Models",
+        description: "Advanced LLMs such as DeepSeek R1 will be tested and compared with baseline models for technical and complex Kubeflow queries.",
+      },
+
+      // PIPELINE AUTOMATION & KUBEFLOW INTEGRATION
+      {
+        title: "Modular RAG Pipelines via Kubeflow",
+        description: "Scalable and modular Kubeflow Pipelines will be implemented to automate data ingestion, embedding, and retrieval workflows.",
+      },
+
+      // USER EXPERIENCE & FEEDBACK
+      {
+        title: "User Feedback Collection System",
+        description: "A feedback mechanism will be implemented to collect user ratings and issue reports to improve chatbot performance over time.",
+      },
+      {
+        title: "Custom Prompt Template Support",
+        description: "Support for user-defined prompt templates will be introduced to offer more flexibility and control in chatbot interactions.",
+      },
     ];
 
   return (

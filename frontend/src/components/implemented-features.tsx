@@ -4,6 +4,10 @@ import { CheckCircle } from "lucide-react"
 export default function ImplementedFeatures() {
     const features = [
         {
+          title: "Dockerized Architecture",
+          description: "I containerized the entire application using Docker for easy deployment and scaling.",
+        },
+        {
             title: "Data Loading & Preprocessing",
             description: "I built a custom data loader to fetch and preprocess any Kubeflow GitHub repository using the Gitingest API. The data is split by file and chunked into 1000-token segments with 100-token overlap. For this demo, i just used the Kubeflow/website repository.",
         },
@@ -31,6 +35,11 @@ export default function ImplementedFeatures() {
             title: "Interactive Chat Interface",
             description: "I developed a responsive real-time chat UI with WebSocket communication between frontend and backend for seamless interaction.",
         },
+        {
+          title: "Azure Deployment",
+          description: "I deployed the application on Azure, and added it as a subdomain to my personal website.",
+
+        }
     ];      
 
   return (
