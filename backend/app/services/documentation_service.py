@@ -92,16 +92,18 @@ async def download_and_save_repository(repository_name: str):
         return "Failed to download the repository."
 
 
-def parse_repository_file(file_path: str) -> List[Tuple[str, str]]:
+async def parse_repository_file(repository_name: str) -> List[Tuple[str, str]]:
     """
     Parse the downloaded repository content file and extract individual file contents.
     
     Args:
-        file_path (str): Path to the downloaded repository content file.
-        
+        repository_name (str): The name of the repository (for example "kubeflow/website").
+
     Returns:
         List[Tuple[str, str]]: List of tuples containing (filename, content).
     """
+    file_path = await download_and_save_repository(repository_name)
+
     try:
         with open(file_path, 'r', encoding='utf-8', errors='replace') as file:
             content = file.read()
@@ -151,3 +153,20 @@ def parse_repository_file(file_path: str) -> List[Tuple[str, str]]:
     except Exception as e:
         print(f"Error parsing repository file: {e}")
         return []
+
+
+async def preprocess_repository_file(repository_name: str) -> List[Tuple[str, str]]:
+    """
+    Preprocess the file content by removing unnecessary files (under 50 character for example)
+
+    Args:
+        repository_name (str): The name of the repository (for example "kubeflow/website").
+    """
+    file_contents = parse_repository_file(repository_name)
+    
+    # Preprocess the file content
+    preprocessed_file_contents = []
+    for filename, content in file_contents:
+        if len(content) > 50:
+            preprocessed_file_contents.append((filename, content))
+    return preprocessed_file_contents
