@@ -20,7 +20,6 @@ import {
   Zap,
   Database,
   Cpu,
-  Sparkles,
   ArrowRight,
   Search,
   RefreshCw,
@@ -50,7 +49,6 @@ export default function ChatInterface() {
     },
   })
 
-  // Scroll to bottom when messages change
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
@@ -59,7 +57,6 @@ export default function ChatInterface() {
 
   return (
     <div className="container mx-auto p-4 flex flex-col h-screen">
-      {/* Header - reduced vertical padding */}
       <header className="py-4 mb-4 border-b flex-shrink-0">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-3 mb-4 md:mb-0">
@@ -104,9 +101,7 @@ export default function ChatInterface() {
         </div>
       </header>
 
-      {/* Main Content - flex-1 to take all available space */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
-        {/* Chat Section - flex and min-h-0 for proper scrolling */}
         <div className="lg:col-span-2 flex flex-col min-h-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col min-h-0">
             <TabsList className="grid grid-cols-2 mb-2 flex-shrink-0">
@@ -120,15 +115,19 @@ export default function ChatInterface() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="chat" className="flex-1 flex flex-col space-y-4">
-              <Card className="flex-1 p-6 overflow-hidden flex flex-col shadow-lg border-2 border-border/50 bg-card/50 backdrop-blur-sm hexagon-bg">
-                <div className="flex-1 overflow-y-auto mb-4 space-y-6 min-h-[500px] pr-2">
+            <TabsContent value="chat" className="flex-1 flex flex-col space-y-4 mt-0">
+              <Card className="flex-1 p-6 overflow-hidden flex flex-col shadow-lg border border-border/30 bg-card/50 backdrop-blur-sm hexagon-bg">
+                <div className="flex-1 overflow-y-auto mb-4 space-y-6 min-h-[500px] pr-2 custom-scrollbar">
                   {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 text-muted-foreground animate-fade-in">
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center mb-6 animate-pulse-slow">
-                        <Sparkles className="h-10 w-10 text-white" />
+                      <div className="relative w-24 h-24 mb-6">
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-indigo-600/30 rounded-full blur-xl"></div>
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 animate-pulse-slow"></div>
+                        <div className="absolute inset-2 rounded-full bg-background flex items-center justify-center">
+                          <img src = "/logo.png" className="h-10 w-10 text-indigo-500" />
+                        </div>
                       </div>
-                      <h3 className="text-xl font-semibold mb-2">Welcome to Kubeflow Assistant</h3>
+                      <h3 className="text-xl font-semibold mb-2 bg-gradient-to-r from-blue-500 to-indigo-600 bg-clip-text text-transparent">Welcome to Kubeflow Assistant</h3>
                       <p className="mb-8 max-w-md">
                         Ask questions about Kubeflow documentation, issues, or general information.
                       </p>
@@ -277,7 +276,6 @@ export default function ChatInterface() {
           </Tabs>
         </div>
 
-        {/* Settings Panel - with proper overflow handling */}
         <div className="flex flex-col min-h-0">
           <Tabs defaultValue="settings" className="flex flex-col min-h-0">
             <TabsList className="grid grid-cols-3 mb-2 flex-shrink-0">
