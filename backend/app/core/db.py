@@ -12,6 +12,7 @@ groq_client = None
 # Azure OpenAI Client
 openai_client = None
 
+
 # Groq
 def connect_groq():
     global groq_client
@@ -44,6 +45,7 @@ def get_weaviate_client():
     connect_weaviate()
     vecdb = weaviate_client
     return vecdb
+
 
 # OpenAI
 def connect_openai():

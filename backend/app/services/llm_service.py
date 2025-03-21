@@ -3,6 +3,7 @@ from app.core.db import get_groq_client
 # Initialize the Groq client
 llm_client = get_groq_client()
 
+
 async def get_response(user_message: str):
     """
     Get a response from the LLM using the provided prompt.

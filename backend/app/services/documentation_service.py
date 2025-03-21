@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 BASE_URL = "https://gitingest.com"  # Base URL for constructing the full download link
 
+
 async def fetch_download_link(repository_name: str):
     """
     Gitingest is used to fetch the content of a GitHub repository.
@@ -16,7 +17,7 @@ async def fetch_download_link(repository_name: str):
         str: The download link for the content of the given repository.
         requests.Session: A session object to maintain cookies and headers.
 
-    PS: I saw how Gitingest send the request through Network tab in Chrome DevTools 
+    PS: I saw how Gitingest send the request through Network tab in Chrome DevTools
         and I mimic it but it won't be like this in a prod version, this is a temporary solution.
     """
     # Define the payload
@@ -24,7 +25,7 @@ async def fetch_download_link(repository_name: str):
         "input_text": repository_name,
         "max_file_size": 243,
         "pattern_type": "exclude",
-        "pattern": ""
+        "pattern": "",
     }
 
     # Create a session to maintain cookies and headers
@@ -43,16 +44,17 @@ async def fetch_download_link(repository_name: str):
 
     # Find the download link
     download_link_tag = soup.find("a", href=lambda href: href and "download" in href)
-    
+
     if not download_link_tag:
         print("Failed to find the download link in the response.")
         return None
 
     # Extract the download link
     download_link = BASE_URL + download_link_tag["href"]
-    
+
     print(f"Download link found: {download_link}")
     return download_link, session
+
 
 async def download_and_save_repository(repository_name: str):
     """
@@ -80,7 +82,7 @@ async def download_and_save_repository(repository_name: str):
         with open(save_path, "wb") as file:
             for chunk in response.iter_content(chunk_size=1024):
                 file.write(chunk)
-        
+
         print(f"Repository successfully downloaded and saved to: {save_path}")
         return True
     else:

@@ -12,8 +12,5 @@ def get_embeddings(text: str):
     :return: The embeddings as a list of floats
     """
     # Get embeddings
-    response = client.embeddings.create(
-        input = text,
-        model = "text-embedding-ada-002"
-    )
+    response = client.embeddings.create(input=text, model="text-embedding-ada-002")
     return response.data[0].embedding
