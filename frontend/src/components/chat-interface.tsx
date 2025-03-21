@@ -126,7 +126,7 @@ export default function ChatInterface() {
   }, [messages])
 
   return (
-    <div className="container mx-auto p-4 flex flex-col h-screen">
+    <div className="container mx-auto p-4 flex flex-col h-screen max-h-screen overflow-hidden">
       <header className="py-4 mb-4 border-b flex-shrink-0">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-3 mb-4 md:mb-0">
@@ -171,9 +171,9 @@ export default function ChatInterface() {
         </div>
       </header>
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0">
-        <div className="lg:col-span-2 flex flex-col min-h-0">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col min-h-0">
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-4 min-h-0 overflow-hidden">
+        <div className="lg:col-span-2 flex flex-col min-h-0 overflow-hidden">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="flex flex-col min-h-0 overflow-hidden">
             <TabsList className="grid grid-cols-2 mb-2 flex-shrink-0">
               <TabsTrigger value="chat" className="flex items-center space-x-2">
                 <MessageSquare className="h-4 w-4" />
@@ -185,9 +185,9 @@ export default function ChatInterface() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="chat" className="flex-1 flex flex-col space-y-4 mt-0">
+            <TabsContent value="chat" className="flex-1 flex flex-col space-y-4 mt-0 overflow-hidden">
               <Card className="flex-1 p-6 overflow-hidden flex flex-col shadow-lg border border-border/30 bg-card/50 backdrop-blur-sm hexagon-bg">
-                <div className="flex-1 overflow-y-auto mb-4 space-y-6 min-h-[500px] pr-2 custom-scrollbar">
+                <div className="flex-1 overflow-y-auto mb-4 space-y-6 pr-2 custom-scrollbar">
                   {messages.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 text-muted-foreground animate-fade-in">
                       <div className="relative w-24 h-24 mb-6">
@@ -363,8 +363,8 @@ export default function ChatInterface() {
           </Tabs>
         </div>
 
-        <div className="flex flex-col min-h-0">
-          <Tabs defaultValue="settings" className="flex flex-col min-h-0">
+        <div className="flex flex-col min-h-0 overflow-hidden">
+          <Tabs defaultValue="settings" className="flex flex-col min-h-0 overflow-hidden">
             <TabsList className="grid grid-cols-3 mb-2 flex-shrink-0">
               <TabsTrigger value="settings" className="flex items-center space-x-2">
                 <Settings className="h-4 w-4" />

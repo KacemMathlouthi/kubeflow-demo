@@ -22,14 +22,16 @@ interface ChatMessageProps {
 
 export default function ChatMessage({ message }: ChatMessageProps) {
   return (
-    <div className={cn("flex w-full my-4", message.role === "user" ? "justify-end" : "justify-start")}>
+    <div className={cn("flex w-full", message.role === "user" ? "justify-end" : "justify-start")}>
       <div
         className={cn("max-w-[85%] flex items-start gap-3", message.role === "user" ? "flex-row-reverse" : "flex-row")}
       >
         <div
           className={cn(
             "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0",
-            message.role === "user" ? "bg-primary/10 text-primary" : "bg-blue-500/10 text-blue-500",
+            message.role === "user"
+              ? "bg-primary/10 text-primary"
+              : "bg-gradient-to-br from-blue-500/20 to-indigo-500/20 text-blue-500",
           )}
         >
           {message.role === "user" ? (
@@ -43,6 +45,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           className={cn(
             "p-4 shadow-md",
             message.role === "user" ? "bg-primary text-primary-foreground" : "bg-card border border-border/50",
+            message.role === "assistant" && "animate-fade-in",
           )}
         >
           <div className="prose dark:prose-invert max-w-none">
