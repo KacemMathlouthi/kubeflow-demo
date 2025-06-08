@@ -11,14 +11,10 @@ export default function Footer() {
               <span className="text-sm font-medium">Kubeflow</span>
             </div>
             <div className="h-4 w-px bg-border/50" />
-            <div className="flex items-center">
-                <img src="/gsoc.png" className="h-6 w-6 mr-2" />
-              <span className="text-sm font-medium">Google Summer of Code</span>
-            </div>
           </div>
 
           <div className="text-center md:text-left text-sm text-muted-foreground">
-            <p>PoC for Kubeflow GSoC Project 12</p>
+            <p>Professional Personal Project</p>
           </div>
 
           <div className="flex items-center space-x-3">

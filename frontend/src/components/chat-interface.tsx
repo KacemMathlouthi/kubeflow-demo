@@ -15,7 +15,6 @@ import {
   BookOpen,
   Github,
   FileCode,
-  BarChart,
   Zap,
   Database,
   Cpu,
@@ -26,7 +25,6 @@ import {
 } from "lucide-react"
 import ChatMessage from "@/components/chat-message"
 import ImplementedFeatures from "@/components/implemented-features"
-import UpcomingFeatures from "@/components/upcoming-features"
 import RagDiagram from "@/components/rag-diagram"
 import Footer from "./footer"
 
@@ -372,7 +370,7 @@ export default function ChatInterface() {
 
         <div className="flex flex-col min-h-0 overflow-hidden">
           <Tabs defaultValue="settings" className="flex flex-col min-h-0 overflow-hidden">
-            <TabsList className="grid grid-cols-3 mb-2 flex-shrink-0">
+            <TabsList className="grid grid-cols-2 mb-2 flex-shrink-0">
               <TabsTrigger value="settings" className="flex items-center space-x-2">
                 <Settings className="h-4 w-4" />
                 <span className="hidden sm:inline text-xs">Settings</span>
@@ -380,10 +378,6 @@ export default function ChatInterface() {
               <TabsTrigger value="implemented" className="flex items-center space-x-2">
                 <FileCode className="h-4 w-4" />
                 <span className="hidden sm:inline text-xs">Implemented</span>
-              </TabsTrigger>
-              <TabsTrigger value="upcoming" className="flex items-center space-x-2">
-                <BarChart className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs">Upcoming</span>
               </TabsTrigger>
             </TabsList>
 
@@ -516,12 +510,6 @@ export default function ChatInterface() {
             <TabsContent value="implemented" className="flex-1 overflow-hidden data-[state=active]:flex">
               <div className="overflow-y-auto h-full">
                 <ImplementedFeatures />
-              </div>
-            </TabsContent>
-
-            <TabsContent value="upcoming" className="flex-1 overflow-hidden data-[state=active]:flex">
-              <div className="overflow-y-auto h-full">
-                <UpcomingFeatures />
               </div>
             </TabsContent>
           </Tabs>
